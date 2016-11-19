@@ -8,9 +8,10 @@
 namespace Dowilcox\KnpMenu\Matcher;
 
 use Knp\Menu\ItemInterface;
+use Knp\Menu\Matcher\MatcherInterface as BaseMatcherInterface;
 use Knp\Menu\Matcher\Voter\VoterInterface;
 
-interface MatcherInterface {
+interface MatcherInterface extends BaseMatcherInterface {
 	/**
 	 * Adds a voter in the matcher in the end
 	 *

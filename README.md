@@ -5,7 +5,7 @@ Laravel 5 package to create navigation menus, based on [KnpLabs/KnpMenu](https:/
 ### Installation
 Add to your composer.json file
 ```json
-"enimiste/knp-menu-laravel": "2.0.*"
+"enimiste/knp-menu-laravel": "1.0.*"
 ```
 
 ### Register the package
@@ -31,13 +31,15 @@ php artisan vendor:publish --tag=knp_menu
 ```
 
 ### Custom Rendrer
-To set a custom menu renderer you should listen to event "Dowilcox\KnpMenu\Event\MenuRendrerEvent" and you get an event payload of type "Dowilcox\KnpMenu\Event\MenuRendrerEvent" where you can set the new custom renderer instance.
-Where : In the boot method of your AppServiceProvider class.
+To define your custom renderer :  
+- Implements the interface "Knp\Menu\Renderer\RendererInterface"
+- Register a binding to "knp_menu.renderer" that returns a new instance of your new custom renderer. To get the matcher use `$app["knp_menu.matcher"]`  
 
 ### Custom Voter
-To add custom Voter you implement the interface "Dowilcox\KnpMenu\Voter\OrderedVoterInterface" and register it in the service container with the tag "knp_menu.voter"
-Set the lower order for Voter that should be executed in first.
-Your Voters will be executed first before the built in ones.
+To add custom Voter you implement the interface "Dowilcox\KnpMenu\Voter\OrderedVoterInterface" and register it in the service container with the tag "knp_menu.voter"  
+Set the lower order for Voter that should be executed in first.  
+You should order values greater than 100.  
+Your Voters will be executed first before the built in ones.  
 - RouteNameVoter
 - UriVoter
 

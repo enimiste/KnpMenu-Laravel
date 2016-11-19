@@ -1,15 +1,11 @@
 <?php namespace Dowilcox\KnpMenu;
 
-use Dowilcox\KnpMenu\Event\MenuRendrerEvent;
 use Dowilcox\KnpMenu\Matcher\Matcher;
+use Dowilcox\KnpMenu\Renderer\ListRenderer;
 use Dowilcox\KnpMenu\Voter\OrderedVoterInterface;
-use Dowilcox\KnpMenu\Voter\RouteNameVoter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
-use Knp\Menu\Matcher\Voter\UriVoter;
 use Knp\Menu\MenuFactory;
-use Knp\Menu\Renderer\ListRenderer;
-use Knp\Menu\Renderer\RendererInterface;
 
 class MenuServiceProvider extends ServiceProvider {
 
@@ -24,13 +20,9 @@ class MenuServiceProvider extends ServiceProvider {
 
 		/** @var Menu $menu */
 		$menu = $this->app['knp_menu.menu'];
-		$this->app['events']->fire( $event = new MenuRendrerEvent() );
-		$rendrer = $event->getRendrer();
-		if ( $rendrer instanceof RendererInterface ) {
-			$menu->setRenderer( $rendrer );
-		}
+		$menu->setRenderer( $this->app->make( 'knp_menu.renderer' ) );
+		$cutom_voter = $this->app->tagged( 'knp_menu.voter' );//implements OrderedVoterInterface
 
-		$cutom_voter = $this->app->tagged( [ 'knp_menu.voter' ] );//implements OrderedVoterInterface
 		collect( $cutom_voter )
 			->filter( function ( $voter ) {
 				return $voter instanceof OrderedVoterInterface;
@@ -50,29 +42,41 @@ class MenuServiceProvider extends ServiceProvider {
 	public function register() {
 		$this->mergeConfigFrom( __DIR__ . '/../config/menu.php', 'menu' );
 
+		$this->app->singleton( 'knp_menu.matcher', Matcher::class );
+
+		$this->app->bind( 'knp_menu.renderer',
+			function ( $app ) {
+				return new ListRenderer( $app['knp_menu.matcher'] );
+			} );
+
 		$this->app->singleton( 'knp_menu.menu',
 			function ( $app ) {
 				$renderOptions = $app['config']['menu.render.default'];
-				$url           = $app['url'];
+				$matcher       = $app['knp_menu.matcher'];
+				$renderer      = $app['knp_menu.renderer'];
 
-				$collection = new Collection();
-
-				$factory = new MenuFactory();
-
-				$matcher = new Matcher();
-				$matcher->addVoter( new RouteNameVoter( $app ) );
-				$matcher->addVoter( new UriVoter( $url->current() ) );
-				$matcher->addVoter( new UriVoter( $url->full() ) );
-
-				$renderer = new ListRenderer( $matcher );
-
-				return new Menu( $renderOptions, $collection, $factory, $matcher, $renderer );
+				return new Menu( $renderOptions, new Collection(), new MenuFactory(), $matcher, $renderer );
 			} );
-
-		$this->app->bind( 'Dowilcox\KnpMenu\Menu',
+		$this->app->bind( \Dowilcox\KnpMenu\Menu::class,
 			function ( $app ) {
 				return $app['knp_menu.menu'];
 			} );
+
+		$this->app->singleton( 'knp_menu.voter.uri.current',
+			function ( $app ) {
+				return new \Dowilcox\KnpMenu\Voter\UriVoter( $app['url']->current(), 1 );
+			} );
+		$this->app->singleton( 'knp_menu.voter.uri.full',
+			function ( $app ) {
+				return new \Dowilcox\KnpMenu\Voter\UriVoter( $app['url']->full(), 2 );
+			} );
+		$this->app->singleton( 'knp_menu.voter.route.name',
+			function ( $app ) {
+				return new \Dowilcox\KnpMenu\Voter\RouteNameVoter( $app['router'], 0 );
+			} );
+		$this->app->tag( 'knp_menu.voter.uri.current', 'knp_menu.voter' );
+		$this->app->tag( 'knp_menu.voter.uri.full', 'knp_menu.voter' );
+		$this->app->tag( 'knp_menu.voter.route.name', 'knp_menu.voter' );
 	}
 
 }

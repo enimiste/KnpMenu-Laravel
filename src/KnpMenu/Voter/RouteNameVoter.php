@@ -12,21 +12,26 @@ namespace Dowilcox\KnpMenu\Voter;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Routing\Router;
 use Knp\Menu\ItemInterface;
-use Knp\Menu\Matcher\Voter\VoterInterface;
 
-class RouteNameVoter implements VoterInterface {
+class RouteNameVoter implements OrderedVoterInterface {
 	/**
-	 * @var Container
+	 * @var Router
 	 */
-	private $container;
+	private $router;
+	/**
+	 * @var
+	 */
+	private $order;
 
 	/**
 	 * RouteNameVoter constructor.
 	 *
 	 * @param Container $container
+	 * @param           $order
 	 */
-	public function __construct( Container $container ) {
-		$this->container = $container;
+	public function __construct( Router $router, $order ) {
+		$this->router = $router;
+		$this->order  = $order;
 	}
 
 
@@ -41,9 +46,7 @@ class RouteNameVoter implements VoterInterface {
 	 * @return boolean|null
 	 */
 	public function matchItem( ItemInterface $item ) {
-		/** @var Router $router */
-		$router = $this->container->make( 'router' );
-		$action = $router->getCurrentRoute()->getAction();
+		$action = $this->router->getCurrentRoute()->getAction();
 		if ( ! array_key_exists( 'as', $action ) ) {
 			return false;
 		}
@@ -60,5 +63,14 @@ class RouteNameVoter implements VoterInterface {
 		}
 
 		return false;
+	}
+
+	/**
+	 * The lower the value is, the high precedence it will take
+	 *
+	 * @return int
+	 */
+	function getOrder() {
+		return $this->order;
 	}
 }
