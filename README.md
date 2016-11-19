@@ -20,10 +20,26 @@ Dowilcox\KnpMenu\MenuServiceProvider::class,
 'Menu' => Dowilcox\KnpMenu\Facades\Menu::class,
 ```
 
+To Access the menu service directly :
+```php
+$menu_builder = app('knp_menu.menu');
+```
+
 #### Publish config
 ```bash
-php artisan vendor:publish
+php artisan vendor:publish --tag=knp_menu
 ```
+
+### Custom Rendrer
+To set a custom menu renderer you should listen to event "Dowilcox\KnpMenu\Event\MenuRendrerEvent" and you get an event payload of type "Dowilcox\KnpMenu\Event\MenuRendrerEvent" where you can set the new custom renderer instance.
+Where : In the boot method of your AppServiceProvider class.
+
+### Custom Voter
+To add custom Voter you implement the interface "Dowilcox\KnpMenu\Voter\OrderedVoterInterface" and register it in the service container with the tag "knp_menu.voter"
+Set the lower order for Voter that should be executed in first.
+Your Voters will be executed first before the built in ones.
+- RouteNameVoter
+- UriVoter
 
 ### Example
 

@@ -2,12 +2,10 @@
 
 use Illuminate\Support\Facades\Facade;
 
-class Menu extends Facade
-{
+class Menu extends Facade {
 
-    protected static function getFacadeAccessor()
-    {
-        return 'menu';
-    }
+	protected static function getFacadeAccessor() {
+		return 'knp_menu.menu';
+	}
 
 }

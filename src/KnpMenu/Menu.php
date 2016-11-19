@@ -1,150 +1,168 @@
 <?php namespace Dowilcox\KnpMenu;
 
 use Dowilcox\KnpMenu\Interfaces\MenuInterface;
+use Dowilcox\KnpMenu\Matcher\MatcherInterface;
 use Illuminate\Support\Collection;
 use Knp\Menu\ItemInterface;
-use Knp\Menu\Matcher\MatcherInterface;
 use Knp\Menu\MenuFactory;
 use Knp\Menu\Renderer\ListRenderer;
+use Knp\Menu\Renderer\RendererInterface;
 
-class Menu implements MenuInterface
-{
+class Menu implements MenuInterface {
 
-    /**
-     * Default render options.
-     *
-     * @var array
-     */
-    protected $renderOptions = [];
+	/**
+	 * Default render options.
+	 *
+	 * @var array
+	 */
+	protected $renderOptions = [ ];
 
-    /**
-     * Holds each instance of a menu.
-     *
-     * @var Collection
-     */
-    protected $collection;
+	/**
+	 * Holds each instance of a menu.
+	 *
+	 * @var Collection
+	 */
+	protected $collection;
 
-    /**
-     * MenuFactory instance.
-     *
-     * @var MenuFactory
-     */
-    protected $factory;
+	/**
+	 * MenuFactory instance.
+	 *
+	 * @var MenuFactory
+	 */
+	protected $factory;
 
-    /**
-     * Instance of a Matcher.
-     *
-     * @var MatcherInterface
-     */
-    protected $matcher;
+	/**
+	 * Instance of a Matcher.
+	 *
+	 * @var MatcherInterface
+	 */
+	protected $matcher;
 
-    /**
-     * ListRenderer instance.
-     *
-     * @var ListRenderer
-     */
-    protected $renderer;
+	/**
+	 * ListRenderer instance.
+	 *
+	 * @var ListRenderer
+	 */
+	protected $renderer;
 
-    /**
-     * Class constructor.
-     *
-     * @param                  $renderOptions
-     * @param Collection       $collection
-     * @param MenuFactory      $factory
-     * @param MatcherInterface $matcher
-     * @param ListRenderer     $renderer
-     */
-    public function __construct(
-        $renderOptions,
-        Collection $collection,
-        MenuFactory $factory,
-        MatcherInterface $matcher,
-        ListRenderer $renderer
-    ) {
-        $this->renderOptions = $renderOptions;
-        $this->collection = $collection;
-        $this->factory = $factory;
-        $this->matcher = $matcher;
-        $this->renderer = $renderer;
-    }
+	/**
+	 * Class constructor.
+	 *
+	 * @param                  $renderOptions
+	 * @param Collection       $collection
+	 * @param MenuFactory      $factory
+	 * @param MatcherInterface $matcher
+	 * @param ListRenderer     $renderer
+	 */
+	public function __construct(
+		$renderOptions,
+		Collection $collection,
+		MenuFactory $factory,
+		MatcherInterface $matcher,
+		ListRenderer $renderer
+	) {
+		$this->renderOptions = $renderOptions;
+		$this->collection    = $collection;
+		$this->factory       = $factory;
+		$this->matcher       = $matcher;
+		$this->renderer      = $renderer;
+	}
 
-    /**
-     * Create a new menu.
-     *
-     * @param $name
-     * @param $options
-     * @return mixed
-     */
-    public function create($name, $options = [])
-    {
-        $menu = $this->factory->createItem($name, $options);
-        $this->collection->put($name, $menu);
+	/**
+	 * Create a new menu.
+	 *
+	 * @param $name
+	 * @param $options
+	 *
+	 * @return mixed
+	 */
+	public function create( $name, $options = [ ] ) {
+		$menu = $this->factory->createItem( $name, $options );
+		$this->collection->put( $name, $menu );
 
-        return $menu;
-    }
+		return $menu;
+	}
 
-    /**
-     * Get a menu by the name.
-     *
-     * @param $name
-     * @return mixed
-     */
-    public function get($name)
-    {
-        return $this->collection->get($name);
-    }
+	/**
+	 * Get a menu by the name.
+	 *
+	 * @param $name
+	 *
+	 * @return mixed
+	 */
+	public function get( $name ) {
+		return $this->collection->get( $name );
+	}
 
-    /**
-     * Forget a menu
-     *
-     * @param $name
-     */
-    public function forget($name)
-    {
-        $this->collection->forget($name);
-    }
+	/**
+	 * Forget a menu
+	 *
+	 * @param $name
+	 */
+	public function forget( $name ) {
+		$this->collection->forget( $name );
+	}
 
-    /**
-     * Render passed menu.
-     *
-     * @param ItemInterface $menu
-     * @param array         $options
-     * @return mixed
-     */
-    public function render(ItemInterface $menu, $options = [])
-    {
-        $renderOptions = array_merge($this->renderOptions, $options);
+	/**
+	 * Render passed menu.
+	 *
+	 * @param ItemInterface $menu
+	 * @param array         $options
+	 *
+	 * @return mixed
+	 */
+	public function render( ItemInterface $menu, $options = [ ] ) {
+		$renderOptions = array_merge( $this->renderOptions, $options );
 
-        return $this->renderer->render($menu, $renderOptions);
-    }
+		return $this->renderer->render( $menu, $renderOptions );
+	}
 
-    /**
-     * Get the factory instance.
-     *
-     * @return MenuFactory
-     */
-    public function getFactory()
-    {
-        return $this->factory;
-    }
+	/**
+	 * Get the factory instance.
+	 *
+	 * @return MenuFactory
+	 */
+	public function getFactory() {
+		return $this->factory;
+	}
 
-    /**
-     * Get the matcher instance.
-     *
-     * @return MatcherInterface
-     */
-    public function getMatcher()
-    {
-        return $this->matcher;
-    }
+	/**
+	 * Get the matcher instance.
+	 *
+	 * @return MatcherInterface
+	 */
+	public function getMatcher() {
+		return $this->matcher;
+	}
 
-    /**
-     * Get the renderer instance.
-     *
-     * @return ListRenderer
-     */
-    public function getRenderer()
-    {
-        return $this->renderer;
-    }
+	/**
+	 * Get the renderer instance.
+	 *
+	 * @return ListRenderer
+	 */
+	public function getRenderer() {
+		return $this->renderer;
+	}
+
+	/**
+	 * @param MatcherInterface $matcher
+	 *
+	 * @return Menu
+	 */
+	public function setMatcher( $matcher ) {
+		$this->matcher = $matcher;
+
+		return $this;
+	}
+
+	/**
+	 * @param RendererInterface $renderer
+	 *
+	 * @return Menu
+	 */
+	public function setRenderer( $renderer ) {
+		$this->renderer = $renderer;
+
+		return $this;
+	}
 }
