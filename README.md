@@ -5,7 +5,7 @@ Laravel 5 package to create navigation menus, based on [KnpLabs/KnpMenu](https:/
 ### Installation
 Add to your composer.json file
 ```json
-"dowilcox/knp-menu-laravel": "1.0.*"
+"enimiste/knp-menu-laravel": "1.0.*"
 ```
 
 ### Register the package
@@ -30,12 +30,25 @@ php artisan vendor:publish
 ```php
 $menu = Menu::create('main-menu', ['childrenAttributes' => ['class' => 'nav']]);
 
-$menu->addChild('Home', ['uri' => url('/')]);
+$menu->addChild('Home', [
+'uri' => url('/'),
+'attributes' => [
+    'class'=>'your_css_class',
+ ],
+ 'extras' => [
+    'routes' => [
+        ['route' => 'route_name_1'],
+        ['route' => 'route_name_2'],
+    ]
+ ]
+]);
 $menu->addChild('Users', ['uri' => route('admin.users.index')]);
 $menu->addChild('Roles', ['uri' => route('admin.roles.index')]);
 $menu->addChild('Menu', ['uri' => url('menu')]);
 
 echo Menu::render($menu);
+//Or
+echo Menu::render($menu, $custom_render_options);//$custom_render_options is an array
 ```
 
 Will output:
@@ -44,13 +57,13 @@ Will output:
   <li class="first">
     <a href="http://localhost:8000">Home</a>
   </li>
-  <li>
+  <li class='your_css_class'>
     <a href="http://localhost:8000/admin/users">Users</a>
   </li>
-  <li>
+  <li class='your_css_class'>
     <a href="http://localhost:8000/admin/roles">Roles</a>
   </li>
-  <li class="current active last">
+  <li class="current active last your_css_class">
     <a href="http://localhost:8000/menu">Menu</a>
   </li>
 </ul>
