@@ -5,7 +5,7 @@ Laravel 5 package to create navigation menus, based on [KnpLabs/KnpMenu](https:/
 ### Installation
 Add to your composer.json file
 ```json
-"enimiste/knp-menu-laravel": "1.0.*"
+"enimiste/knp-menu-laravel": "2.1.*"
 ```
 
 ### Register the package
