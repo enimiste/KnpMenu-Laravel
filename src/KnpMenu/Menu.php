@@ -112,6 +112,9 @@ class Menu implements MenuInterface {
 	 * @return mixed
 	 */
 	public function render( ItemInterface $menu, $options = [ ] ) {
+		if(is_string($options))
+			$options = config($options);
+		
 		$renderOptions = array_merge( $this->renderOptions, $options );
 
 		return $this->renderer->render( $menu, $renderOptions );
