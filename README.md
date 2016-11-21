@@ -5,7 +5,7 @@ Laravel 5 package to create navigation menus, based on [KnpLabs/KnpMenu](https:/
 ### Installation
 Add to your composer.json file
 ```json
-"enimiste/knp-menu-laravel": "2.1.*"
+"enimiste/knp-menu-laravel": "1.0.*"
 ```
 
 ### Register the package
@@ -42,6 +42,10 @@ You should order values greater than 100.
 Your Voters will be executed first before the built in ones.  
 - RouteNameVoter
 - UriVoter
+
+### Blade directives
+- @rendermenu("main" [, {"firstClass":"first2","lastClass":"last2"}]) or @rendermenu("main" [, "config_name"]): It renders the menu defined by the name "menu_name". It is a shortcut to `echo \Menu::render(\Menu::get('menu_name'))`
+- @menu('menu_name') .... @endmenu : between these two directives you have access to a variable named `$menu` holding the menu defined by the name "menu_name". This object is an instance of `Knp\Menu\MenuItem`
 
 ### Example
 

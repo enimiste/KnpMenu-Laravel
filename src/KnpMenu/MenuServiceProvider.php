@@ -34,6 +34,37 @@ class MenuServiceProvider extends ServiceProvider {
 			->each( function ( $voter ) use ( $menu ) {
 				$menu->getMatcher()->pushVoter( $voter );
 			} );
+
+		\Blade::directive( 'menu',
+			function ( $exp ) {
+				return '<?php $menu = \Menu::get(with(' . $exp . ')); ?>';
+			} );
+
+		\Blade::directive( 'endmenu',
+			function ( $exp ) {
+				return '<?php unset($menu); ?>';
+			} );
+
+		\Blade::directive( 'rendermenu',
+			function ( $exp ) {
+				$exp     = sprintf( "[%s]", trim( $exp, '()' ) );
+				$args    = json_decode( $exp, true );
+				$options = "{}";
+				if ( count( $args ) == 0 ) {
+					throw new \RuntimeException( '@rendermenu directive require at least one argument. It is the name of the menu to render.' );
+				} else {
+					$name   = $args[0];
+					$config = $args[1];
+
+					if ( is_string( $config ) ) {
+						return '<?php echo \Menu::render(\Menu::get("' . $name . '"), "' . $config . '"); ?>';
+					} else {
+						$options = json_encode( $config );
+						return '<?php echo \Menu::render(\Menu::get("' . $name . '"), json_decode(\'' . $options . '\', true)); ?>';
+					}
+				}
+
+			} );
 	}
 
 	/**
@@ -77,6 +108,7 @@ class MenuServiceProvider extends ServiceProvider {
 		$this->app->tag( 'knp_menu.voter.uri.current', 'knp_menu.voter' );
 		$this->app->tag( 'knp_menu.voter.uri.full', 'knp_menu.voter' );
 		$this->app->tag( 'knp_menu.voter.route.name', 'knp_menu.voter' );
+
 	}
 
 }
