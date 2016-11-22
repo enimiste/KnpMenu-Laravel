@@ -3,6 +3,8 @@
 use Dowilcox\KnpMenu\Matcher\Matcher;
 use Dowilcox\KnpMenu\Renderer\ListRenderer;
 use Dowilcox\KnpMenu\Voter\OrderedVoterInterface;
+use Dowilcox\KnpMenu\Voter\RouteNameVoter;
+use Dowilcox\KnpMenu\Voter\UriVoter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Knp\Menu\MenuFactory;
@@ -53,15 +55,21 @@ class MenuServiceProvider extends ServiceProvider {
 				if ( count( $args ) == 0 ) {
 					throw new \RuntimeException( '@rendermenu directive require at least one argument. It is the name of the menu to render.' );
 				} else {
-					$name   = $args[0];
-					$config = $args[1];
+					$name = $args[0];
+					if ( count( $args ) > 1 ) {
+						$config = $args[1];
 
-					if ( is_string( $config ) ) {
-						return '<?php echo \Menu::render(\Menu::get("' . $name . '"), "' . $config . '"); ?>';
+						if ( is_string( $config ) ) {
+							return '<?php echo \Menu::render(\Menu::get("' . $name . '"), "' . $config . '"); ?>';
+						} else {
+							$options = json_encode( $config );
+
+							return '<?php echo \Menu::render(\Menu::get("' . $name . '"), json_decode(\'' . $options . '\', true)); ?>';
+						}
 					} else {
-						$options = json_encode( $config );
-						return '<?php echo \Menu::render(\Menu::get("' . $name . '"), json_decode(\'' . $options . '\', true)); ?>';
+						return '<?php echo \Menu::render(\Menu::get("' . $name . '")); ?>';
 					}
+
 				}
 
 			} );
@@ -95,15 +103,15 @@ class MenuServiceProvider extends ServiceProvider {
 
 		$this->app->singleton( 'knp_menu.voter.uri.current',
 			function ( $app ) {
-				return new \Dowilcox\KnpMenu\Voter\UriVoter( $app['url']->current(), 1 );
+				return new UriVoter( $app['url']->current(), 300 );
 			} );
 		$this->app->singleton( 'knp_menu.voter.uri.full',
 			function ( $app ) {
-				return new \Dowilcox\KnpMenu\Voter\UriVoter( $app['url']->full(), 2 );
+				return new UriVoter( $app['url']->full(), 200 );
 			} );
 		$this->app->singleton( 'knp_menu.voter.route.name',
 			function ( $app ) {
-				return new \Dowilcox\KnpMenu\Voter\RouteNameVoter( $app['router'], 0 );
+				return new RouteNameVoter( $app['router'], 100 );
 			} );
 		$this->app->tag( 'knp_menu.voter.uri.current', 'knp_menu.voter' );
 		$this->app->tag( 'knp_menu.voter.uri.full', 'knp_menu.voter' );

@@ -38,10 +38,10 @@ To define your custom renderer :
 ### Custom Voter
 To add custom Voter you implement the interface "Dowilcox\KnpMenu\Voter\OrderedVoterInterface" and register it in the service container with the tag "knp_menu.voter"  
 Set the lower order for Voter that should be executed in first.  
-You should order values greater than 100.  
+It is recommended order values between 0 and than 100.  
 Your Voters will be executed first before the built in ones.  
-- RouteNameVoter
-- UriVoter
+- RouteNameVoter (100)
+- UriVoter (200 and 300)
 
 ### Blade directives
 - @rendermenu("main" [, {"firstClass":"first2","lastClass":"last2"}]) or @rendermenu("main" [, "config_name"]): It renders the menu defined by the name "menu_name". It is a shortcut to `echo \Menu::render(\Menu::get('menu_name'))`
@@ -51,6 +51,21 @@ Your Voters will be executed first before the built in ones.
 
 ```php
 $menu = Menu::create('main-menu', ['childrenAttributes' => ['class' => 'nav']]);
+
+/*
+* This is the list of possible options for a menu item :
+*
+*     'uri' => null,
+*     'label' => null,
+*     'attributes' => array(),
+*     'linkAttributes' => array(),
+*     'childrenAttributes' => array(),
+*     'labelAttributes' => array(),
+*     'extras' => array(),
+*     'current' => null,
+*     'display' => true,
+*     'displayChildren' => true,
+*/
 
 $menu->addChild('Home', [
 'uri' => url('/'),

@@ -5,7 +5,6 @@ use Dowilcox\KnpMenu\Matcher\MatcherInterface;
 use Illuminate\Support\Collection;
 use Knp\Menu\ItemInterface;
 use Knp\Menu\MenuFactory;
-use Knp\Menu\Renderer\ListRenderer;
 use Knp\Menu\Renderer\RendererInterface;
 
 class Menu implements MenuInterface {
@@ -41,25 +40,25 @@ class Menu implements MenuInterface {
 	/**
 	 * ListRenderer instance.
 	 *
-	 * @var ListRenderer
+	 * @var RendererInterface
 	 */
 	protected $renderer;
 
 	/**
 	 * Class constructor.
 	 *
-	 * @param                  $renderOptions
-	 * @param Collection       $collection
-	 * @param MenuFactory      $factory
-	 * @param MatcherInterface $matcher
-	 * @param ListRenderer     $renderer
+	 * @param                   $renderOptions
+	 * @param Collection        $collection
+	 * @param MenuFactory       $factory
+	 * @param MatcherInterface  $matcher
+	 * @param RendererInterface $renderer
 	 */
 	public function __construct(
 		$renderOptions,
 		Collection $collection,
 		MenuFactory $factory,
 		MatcherInterface $matcher,
-		ListRenderer $renderer
+		RendererInterface $renderer
 	) {
 		$this->renderOptions = $renderOptions;
 		$this->collection    = $collection;
@@ -112,9 +111,10 @@ class Menu implements MenuInterface {
 	 * @return mixed
 	 */
 	public function render( ItemInterface $menu, $options = [ ] ) {
-		if(is_string($options))
-			$options = config($options);
-		
+		if ( is_string( $options ) ) {
+			$options = config( $options );
+		}
+
 		$renderOptions = array_merge( $this->renderOptions, $options );
 
 		return $this->renderer->render( $menu, $renderOptions );
@@ -141,7 +141,7 @@ class Menu implements MenuInterface {
 	/**
 	 * Get the renderer instance.
 	 *
-	 * @return ListRenderer
+	 * @return RendererInterface
 	 */
 	public function getRenderer() {
 		return $this->renderer;
