@@ -111,7 +111,7 @@ class MenuServiceProvider extends ServiceProvider {
 			} );
 		$this->app->singleton( 'knp_menu.voter.route.name',
 			function ( $app ) {
-				return new RouteNameVoter( $app['router'], 100 );
+				return new RouteNameVoter( $app, 100 );
 			} );
 		$this->app->tag( 'knp_menu.voter.uri.current', 'knp_menu.voter' );
 		$this->app->tag( 'knp_menu.voter.uri.full', 'knp_menu.voter' );
